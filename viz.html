@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+<html>
+
+<head><meta charset="utf-8"/></head>
+<body>
+    <br><br><br><br>
+    <p align="center">Historical Components of Dow Jones 1896-2017<p>
+    <div id="svg-container">
+    <svg id="viz" width="1000" height="2000"></svg>
+    </div>
+
+<script>
+
+
+
+    var width = 1000;
+    var height = 2000;
+
+    var mouseX;
+    var join, x_scale, y_scale, bar_scale;
+
+    leftMargin = 250;
+    topMargin = 10;
+
+    function timeFromDate(date1, date2)
+    {
+      var oneDay = 24*60*60*1000;
+
+      var firstDate = date1;
+      var secondDate = date2;
+
+      var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+
+      return diffDays/365;
+
+    }
+
+  //  function djiaviz()
+  //  {
+
+        d3.csv("https://raw.githubusercontent.com/bracher32/DJIA-Historical-Components/master/djia_history_modified.csv").get(function(error, data)
+        {
+
+          var filteredData = data.filter(function(d){return d.DateAddedY >= 1896 && d.DateRemovedY <= 2017;});
+
+          var tooltip = d3.select("#viz").append('g')
+          .attr('class',tooltip)
+          .attr('width',2000)
+          .style('display','none');
+
+          tooltip.append('text')
+          .attr('x', 15)
+          .attr('dy', '1.2em')
+          .style('font-size','1.00em');
+          //.attr('font-weight', 'bold');
+
+          join = d3.select("#viz").selectAll(".companyRecords").data(filteredData);
+
+          //console.log("woooooooooo", data[0].DaysOn);
+
+        /*  var*/ y_scale = d3.scaleBand()
+                          .domain(filteredData.map(a => a.Company))
+                          .range([0,height-500])
+                          .padding(0.1);
+
+          /*var*/ x_scale = d3.scaleLinear()
+                          .domain([(d3.min(data.map(a => a.DateAddedY))), d3.max(data.map(a => a.DateRemovedY))])
+                          .range([0,width-500]);
+
+        /*  var*/ bar_scale = d3.scaleLinear()
+                            .domain([24,39868])
+                            .range([0,width-500]);
+
+          d3.select("#viz").append("g")
+            .attr("transform", "translate(250,250)")
+            .attr("stroke", "black")
+            .call(d3.axisLeft(y_scale));
+
+          d3.select("#viz").append("g")
+            .attr("transform", "translate(250,1750)")
+            .attr("stroke", "black")
+            .call(d3.axisBottom(x_scale));
+
+
+            join.enter().append("rect").merge(join)
+              .attr("height", y_scale.bandwidth())//15)
+              .attr("width", function(d,i){return bar_scale(d.DaysOn);})
+              .attr("y", function(d,i){return y_scale(d.Company)+250;})//i*20;})
+              .attr("x", function(d,i){return x_scale(d.DateAddedY)+250;})//2018-d.DateAddedY + 200;})
+              .attr("class", "companyRecords")
+              .attr("fill", "steelblue")
+              .attr("text",function(d){return d.Company;})
+              .attr("text-anchor", "middle")
+              .on('mouseover',function(){
+
+                tooltip.style('display',null);
+
+              })
+              .on('mouseout',function(){
+
+                tooltip.style('display','none');
+
+              })
+              .on('mousemove',function(d){
+
+                var xPos = d3.mouse(this)[0];
+                var yPos = d3.mouse(this)[1];
+                tooltip.attr('transform','translate('+xPos+','+yPos+')');
+                tooltip.select('text').text(d.Company + ", " + d.DateAddedY);
+              }
+            );
+
+            join.exit().remove();
+      });
+
+function loadRecords(startDate,endDate){
+      d3.csv("https://raw.githubusercontent.com/bracher32/DJIA-Historical-Components/master/djia_history_modified.csv").get(function(error, data)
+      {
+
+        var filteredData = data.filter(function(d){return d.DateAddedY >= startDate && d.DateRemovedY <= endDate;});
+
+        var tooltip = d3.select("#viz").append('g')
+        .attr('class',tooltip)
+        .attr('width',2000)
+        .style('display','none');
+
+        tooltip.append('text')
+        .attr('x', 15)
+        .attr('dy', '1.2em')
+        .style('font-size','1.00em');
+        //.attr('font-weight', 'bold');
+
+        join = d3.select("#viz").selectAll(".companyRecords").data(filteredData);
+
+        //console.log("woooooooooo", data[0].DaysOn);
+
+      /*  var*/ y_scale = d3.scaleBand()
+                        .domain(filteredData.map(a => a.Company))
+                        .range([0,height-500])
+                        .padding(0.1);
+
+        /*var*/ x_scale = d3.scaleLinear()
+                        .domain([(d3.min(data.map(a => a.DateAddedY))), d3.max(data.map(a => a.DateRemovedY))])
+                        .range([0,width-500]);
+
+      /*  var*/ bar_scale = d3.scaleLinear()
+                          .domain([24,39868])
+                          .range([0,width-500]);
+
+        /*d3.select("#viz").append("g")
+          .attr("transform", "translate(250,250)")
+          .attr("stroke", "black")
+          .call(d3.axisLeft(y_scale));*/
+
+        /*d3.select("#viz").append("g")
+          .attr("transform", "translate(250,1750)")
+          .attr("stroke", "black")
+          .call(d3.axisBottom(x_scale));*/
+
+
+          join.enter().append("rect").merge(join)
+            .attr("height", y_scale.bandwidth())//15)
+            .attr("width", function(d,i){return bar_scale(d.DaysOn);})
+            .attr("y", function(d,i){return y_scale(d.Company)+250;})//i*20;})
+            .attr("x", function(d,i){return x_scale(d.DateAddedY)+250;})//2018-d.DateAddedY + 200;})
+            .attr("class", "companyRecords")
+            .attr("fill", "steelblue")
+            .attr("text",function(d){return d.Company;})
+            .attr("text-anchor", "middle")
+            .on('mouseover',function(){
+
+              tooltip.style('display',null);
+
+            })
+            .on('mouseout',function(){
+
+              tooltip.style('display','none');
+
+            })
+            .on('mousemove',function(d){
+
+              var xPos = d3.mouse(this)[0];
+              var yPos = d3.mouse(this)[1];
+              tooltip.attr('transform','translate('+xPos+','+yPos+')');
+              tooltip.select('text').text(d.Company + ", " + d.DateAddedY);
+            }
+          );
+
+
+
+          /*function(d){
+
+              if (mouseX >= x_scale(d.DateAddedY)+250 && mouseX < x_scale(d.DateAddedY)+250 + bar_scale(d.DaysOn))
+              {
+                return "yellow ";
+              } else{
+                return "steelblue ";
+              }
+
+            });*/
+
+          join.exit().remove();
+
+        /*  var mouseG = d3.select("#viz").append("g")
+            .attr("transform", "translate(250,250)")
+            .attr('width', width-500) // can't catch mouse events on a g element
+            .attr('height', height-1000)
+            .attr("class", "mouse-over-effects");
+
+          mouseG.append("path") // this is the black vertical line to follow mouse
+            .attr("class", "mouse-line")
+            .style("stroke", "black")
+            .style("stroke-width", "1px")
+            .style("opacity", "0");
+
+          mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas.........tge region that is sensitive to the mouse placement
+            .attr('width', width-400) // can't catch mouse events on a g element
+            .attr('height', height-500)
+            .attr('fill', 'none')
+            .attr('class','mouse-over-effects')
+            .attr('pointer-events', 'all')
+            .on('mouseout', function() { // on mouse out hide line, circles and text
+              d3.select(".mouse-line")
+                .style("opacity", "0");
+            })
+            .on('mouseover', function() { // on mouse in show line, circles and text
+              d3.select(".mouse-line")
+                .style("opacity", "1");
+            })
+            .on('mousemove', function()
+              { // mouse moving over canvas
+                var mouse = d3.mouse(this);
+                d3.select(".mouse-line")
+                  .attr("d", function()
+                    {
+                      var d = "M" + mouse[0] + "," + height;
+                      d += " " + mouse[0] + "," + 0;
+
+
+                      return d;
+                    }
+                        )
+                mouseX = mouse[0];
+                //console.log("mouse x: " + mouseX);
+
+                //d3.selectAll('.companyRecords')
+                  //.attr('width', function(d){d.width+1;});
+                updateCompany();
+          });*/
+    });
+
+}
+
+    function updateCompany(){
+
+
+
+    }
+
+    function testFunction(boob,toob){
+      console.log("the busston worked!" + "..." + boob + "...annnnd..." + toob);
+    }
+
+
+
+    //}
+//.domain(data.map(function(d) { return d.Company; }))
+
+
+</script>
+
+<form oninput="loadRecords(txtFirstName.value,txtLastName.value)">
+  Starting Year (1896 onward) : <input type="text" name="txtFirstName" id="txtFirstName"/> <br><br>
+  Ending Year (1896-2017) : <input type="text" name="txtLastName" /> <br><br>
+</form>
+
+
+</body>
+
+</html>

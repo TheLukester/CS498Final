@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>About the viz</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+
+  <h1>About the Historical Components of the DJIA Viz</h1>
+
+  <h3>Layout and any visual structure</h3>
+  <p>
+    This visualization follows a Martini Glass format. The narrow, author-led section starts with a brief overview of the changes the dow has experienced over the years. I picked these specific dates because I think it would help the user understand the sorts of changes that happen and why. The pictures I included for color and appearance. I found this easier to implement than CSS and I think it helps give the user a sense of control by being able to “go off the path” by spending some time on the pictures. The narrative then opens up and the user can then decide to see which changes occurred during whichever time period they are interested in.
+  <p>
+
+  <h3>Annotations</h3>
+  <p>
+    Tooltips are used to display the information I thought was most important about each specific company, which was name of the company and the date it was added. These appear when the user hovers over each bar and then they are cleared once the mouse is no longer hovering.
+  </p>
+
+  <h3>Parameters</h3>
+  <p>
+    There are two parameters - year and company. The visualization changes based on the desired display years. For example, if you inly want to view from 1910 to 2000, then you can put those dates in.  This will interact with the companies displayed, such as the length of the bar chart (time it spend on the dow before being removed).
+  </p>
+
+
+  <h3>Triggers</h3>
+  <p>
+  The primary trigger of the visualization is inputting the date ranges. This is then linked to which companies are displayed on the chart. How the companies are displayed is determined by how many period they are active in the date range. For instance, if a company was added and removed twice, then there would be two different bars to indicate this.
+  </p>
+
+  <h3>User interface events</h3>
+  <p>
+    The user interface is primarily driven by buttons with labels directly on them containing directions (ie “Next”, “Explore”). When the narrative opens up, there are additional labels at the bottom to indicate the years can be adjusted. I decided to leave no affordance with regard to the tooltip because I think it is natural to hover over what you’re currently focused on, and additional text or markings would be distracting.
+  </p>
+
+</body>
+</html>
